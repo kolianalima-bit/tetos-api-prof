@@ -1,18 +1,43 @@
 const PRISMA = require("../services");
 
-async function buscar(req, res){
+async function buscar(req, res) {
     try {
+
+        const query = {};
+        if (req.query.manutencoes == "true") {
+            query.include = {
+                historicos_manutencoes: true
+            }
+        }
+
+
+          if (req.query.historicos == "true") {
+            query.include = {
+                historicos_imovel: true
+            }
+        }
+
+           if (req.query.locatario == "true") {
+            query.include = {
+                locatario: true
+            }
+        }
+
+
+
+
+
         const linhas = await PRISMA.imoveis.findMany();
         res.json(linhas);
     } catch (error) {
         res.json({
             type: "error",
-            description: error.message 
+            description: error.message
         });
     }
 }
 
-async function criar(req, res){
+async function criar(req, res) {
     try {
         const dados = req.body;
         const arquivo = req.file;
@@ -29,64 +54,64 @@ async function criar(req, res){
                 imagem: `/uploads/imoveis/${arquivo.filename}`
             }
         });
-        
+
         res.json({
             type: "success",
             description: "Registro criado com sucesso."
         })
-        
+
     } catch (error) {
         res.json({
             type: "error",
-            description: error.message 
+            description: error.message
         });
     }
 }
 
-async function editar(req, res){
+async function editar(req, res) {
     try {
         const dados = req.body;
         const { id } = req.params;
-        
+
         await PRISMA.imoveis.update({
             where: {
                 id
             },
             data: dados
         });
-        
+
         res.json({
             type: "success",
             description: "Registro atualizado com sucesso."
         })
-        
+
     } catch (error) {
         res.json({
             type: "error",
-            description: error.message 
+            description: error.message
         });
     }
 }
 
-async function deletar(req, res){
+async function deletar(req, res) {
     try {
         const { id } = req.params;
-        
+
         await PRISMA.imoveis.delete({
             where: {
                 id
             }
         });
-        
+
         res.json({
             type: "success",
             description: "Registro deletado com sucesso."
         })
-        
+
     } catch (error) {
         res.json({
             type: "error",
-            description: error.message 
+            description: error.message
         });
     }
 }
